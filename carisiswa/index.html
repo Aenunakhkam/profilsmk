@@ -104,6 +104,15 @@
             </div>
         </div>
 
+        <!-- Chart untuk Jumlah Siswa per Kelas -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="chart-container">
+                    <canvas id="classChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Tabel Data Siswa -->
         <div id="loading" class="text-center">
             <div class="spinner-border" role="status">
@@ -222,18 +231,27 @@
 
         // Fungsi untuk membuat chart
         function createCharts(data) {
+            // Hitung jumlah siswa per jenis kelamin
             const genderCounts = data.reduce((acc, item) => {
                 acc[item.gender] = (acc[item.gender] || 0) + 1;
                 return acc;
             }, {});
 
+            // Hitung jumlah siswa per jurusan
             const majorCounts = data.reduce((acc, item) => {
                 acc[item.major] = (acc[item.major] || 0) + 1;
                 return acc;
             }, {});
 
+            // Hitung jumlah siswa per angkatan
             const yearCounts = data.reduce((acc, item) => {
                 acc[item.year] = (acc[item.year] || 0) + 1;
+                return acc;
+            }, {});
+
+            // Hitung jumlah siswa per kelas
+            const classCounts = data.reduce((acc, item) => {
+                acc[item.class] = (acc[item.class] || 0) + 1;
                 return acc;
             }, {});
 
@@ -326,6 +344,51 @@
                         borderColor: '#FF6384',
                         fill: false,
                         tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e9ecef',
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart',
+                    }
+                }
+            });
+
+            // Chart untuk Jumlah Siswa per Kelas
+            const classChartCtx = document.getElementById('classChart').getContext('2d');
+            new Chart(classChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(classCounts),
+                    datasets: [{
+                        label: 'Jumlah Siswa per Kelas',
+                        data: Object.values(classCounts),
+                        backgroundColor: '#4BC0C0',
+                        borderWidth: 1
                     }]
                 },
                 options: {
