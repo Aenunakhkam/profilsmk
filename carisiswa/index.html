@@ -21,6 +21,11 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 100%; /* Pastikan chart muat dengan baik */
+            height: 300px;   /* Tetapkan tinggi tetap untuk chart */
+        }
+        canvas {
+            max-height: 300px; /* Batasi tinggi untuk responsivitas */
         }
         table {
             background-color: #ffffff;
@@ -130,7 +135,7 @@
             <p>Memuat data...</p>
         </div>
         <div class="input-group mb-3">
-            <label for="entriesPerPage" class="mr-2 align-self-center">Show entries:</label>
+            <label for="entriesPerPage" class="mr-2 align-self-center">Tampilkan entri:</label>
             <select id="entriesPerPage" class="form-control" onchange="updateEntriesPerPage()">
                 <option value="10">10</option>
                 <option value="15">15</option>
@@ -265,28 +270,23 @@
 
         // Fungsi untuk membuat chart
         function createCharts(data) {
-            // Hitung jumlah seluruh siswa
             const totalStudents = data.length;
 
-            // Hitung jumlah siswa per jenis kelamin
             const genderCounts = data.reduce((acc, item) => {
                 acc[item.gender] = (acc[item.gender] || 0) + 1;
                 return acc;
             }, {});
 
-            // Hitung jumlah siswa per jurusan
             const majorCounts = data.reduce((acc, item) => {
                 acc[item.major] = (acc[item.major] || 0) + 1;
                 return acc;
             }, {});
 
-            // Hitung jumlah siswa per angkatan
             const yearCounts = data.reduce((acc, item) => {
                 acc[item.year] = (acc[item.year] || 0) + 1;
                 return acc;
             }, {});
 
-            // Hitung jumlah siswa per kelas
             const classCounts = data.reduce((acc, item) => {
                 acc[item.class] = (acc[item.class] || 0) + 1;
                 return acc;
@@ -299,27 +299,16 @@
                 data: {
                     labels: ['Total Siswa'],
                     datasets: [{
-                        label: 'Jumlah Seluruh Siswa',
                         data: [totalStudents],
-                        backgroundColor: ['#36A2EB'],
+                        backgroundColor: ['#4CAF50'],
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart',
+                        legend: { position: 'top' },
+                        tooltip: { callbacks: { label: (tooltipItem) => `Total: ${tooltipItem.raw}` } }
                     }
                 }
             });
@@ -333,38 +322,18 @@
                     datasets: [{
                         label: 'Jumlah Siswa per Jenis Kelamin',
                         data: Object.values(genderCounts),
-                        backgroundColor: ['#36A2EB', '#FF6384'],
+                        backgroundColor: ['#2196F3', '#FF5722'],
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                        }
+                        legend: { position: 'top' },
+                        tooltip: { callbacks: { label: (tooltipItem) => `${tooltipItem.dataset.label}: ${tooltipItem.raw}` } }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: '#e9ecef',
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false,
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart',
+                        y: { beginAtZero: true }
                     }
                 }
             });
@@ -385,18 +354,8 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart',
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: (tooltipItem) => `${tooltipItem.dataset.label}: ${tooltipItem.raw}` } }
                     }
                 }
             });
@@ -418,31 +377,11 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                        }
+                        legend: { position: 'top' },
+                        tooltip: { callbacks: { label: (tooltipItem) => `${tooltipItem.dataset.label}: ${tooltipItem.raw}` } }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: '#e9ecef',
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false,
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart',
+                        y: { beginAtZero: true }
                     }
                 }
             });
@@ -463,31 +402,11 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                        }
+                        legend: { position: 'top' },
+                        tooltip: { callbacks: { label: (tooltipItem) => `${tooltipItem.dataset.label}: ${tooltipItem.raw}` } }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: '#e9ecef',
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false,
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart',
+                        y: { beginAtZero: true }
                     }
                 }
             });
