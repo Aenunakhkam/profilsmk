@@ -35,39 +35,41 @@
         }
 
         table {
-    width: 100%; /* Memastikan tabel mengisi area yang tersedia */
-    background-color: #ffffff; /* Latar belakang putih */
-    border-collapse: collapse; /* Menghilangkan jarak antara border */
-    border-radius: 10px; /* Sudut melengkung */
-    overflow: hidden; /* Menghindari konten melampaui batas */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Bayangan halus */
-}
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-th, td {
-    padding: 12px; /* Ruang dalam sel */
-    text-align: left; /* Rata kiri */
-    border-bottom: 1px solid #e0e0e0; /* Garis bawah halus */
-}
+        .btn-modern {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
 
-th {
-    background-color: #007bff; /* Latar belakang header */
-    color: white; /* Warna teks header */
-    font-weight: bold; /* Teks tebal */
-}
+        .btn-modern:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
 
-tr:hover {
-    background-color: #f1f1f1; /* Efek hover */
-}
+        #loading {
+            display: none;
+            margin-top: 20px;
+        }
 
-.status-lulus {
-    color: #dc3545; /* Warna untuk status lulus */
-    font-weight: bold;
-}
+        .status-lulus {
+            color: #dc3545;
+            font-weight: bold;
+        }
 
-.status-aktif {
-    color: #28a745; /* Warna untuk status aktif */
-    font-weight: bold;
-}
+        .status-aktif {
+            color: #28a745;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
