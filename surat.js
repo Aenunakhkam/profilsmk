@@ -156,7 +156,7 @@ function generateSuratDiterima(siswa) {
     <body>
         <div class="container">
             <div class="kop-surat">
-                <img src="hasyri.png" alt="Logo Sekolah"> <!-- Ukuran logo sudah diperbesar dalam CSS -->
+                <img src="image/hasyri.png" alt="Logo Sekolah"> <!-- Ukuran logo sudah diperbesar dalam CSS -->
                 <div class="teks-kop">
                     <h1>YAYASAN AMANATUSSOLIKHA</h1>
                     <h1>SMK HASYIM ASY'ARI BOJONG</h1>
