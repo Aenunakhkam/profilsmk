@@ -39,12 +39,12 @@
         }
         .running-text marquee {
             font-size: 1rem;
-            color: #FFD700; /* Warna kuning */
-            font-weight: bold; /* Teks tebal */
+            color: #FFD700;
+            font-weight: bold;
         }
         .running-text i {
             margin-right: 10px;
-            color: #FFD700; /* Warna kuning untuk ikon */
+            color: #FFD700;
         }
         .info-box {
             background-color: #fff3cd;
@@ -210,6 +210,7 @@
                 <tr>
                     <th>No</th>
                     <th>Nama</th>
+                    <th>Asal Sekolah</th>
                     <th>NISN</th>
                     <th>Tanggal Lahir</th>
                     <th>Jenis Kelamin</th>
@@ -238,7 +239,7 @@
     <script>
         const sheetId = '1gCgzVIUENgO__M5PQXtWbU4YM4Q-uKxR3QxAELAvGPE'; // Ganti dengan ID Google Sheet Anda
         const apiKey = 'AIzaSyD0onwYazef-vE8o1FmYUEe41PRL95ULMU'; // Ganti dengan API Key Anda
-        const range = 'A:H'; // Mengambil semua baris dan kolom A sampai H
+        const range = 'A:I'; // Mengambil semua baris dan kolom A sampai I
 
         let allData = []; // Menyimpan semua data untuk pencarian dan filter
 
@@ -258,22 +259,68 @@
             container.innerHTML = ''; // Kosongkan tabel sebelum menambahkan data baru
 
             data.forEach((row, index) => {
-                const openDate = new Date(row[6]); // Tanggal pembukaan ada di kolom G (format YYYY-MM-DD HH:MM:SS)
+                const openDate = new Date(row[7]); // Tanggal pembukaan ada di kolom H (format YYYY-MM-DD HH:MM:SS)
+                const formattedDate = openDate.toLocaleString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
                 if (openDate > currentDate) {
                     hasOpenDate = true;
-                    warningMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> Pengumuman akan dibuka pada: ${openDate.toLocaleString()}`;
+
+                    // Hitung mundur
+                    const timeDiff = openDate - currentDate;
+                    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                    warningMessage.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i> 
+                        Pengumuman akan dibuka pada: ${formattedDate}. 
+                        Waktu tersisa: ${days} hari, ${hours} jam, ${minutes} menit, ${seconds} detik.
+                    `;
+
+                    // Update hitung mundur setiap detik
+                    const countdownInterval = setInterval(() => {
+                        const now = new Date();
+                        const newTimeDiff = openDate - now;
+
+                        if (newTimeDiff <= 0) {
+                            clearInterval(countdownInterval);
+                            warningMessage.innerHTML = '';
+                            fetchData(); // Refresh data setelah pengumuman dibuka
+                        } else {
+                            const newDays = Math.floor(newTimeDiff / (1000 * 60 * 60 * 24));
+                            const newHours = Math.floor((newTimeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const newMinutes = Math.floor((newTimeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                            const newSeconds = Math.floor((newTimeDiff % (1000 * 60)) / 1000);
+
+                            warningMessage.innerHTML = `
+                                <i class="fas fa-exclamation-circle"></i> 
+                                Pengumuman akan dibuka pada: ${formattedDate}. 
+                                Waktu tersisa: ${newDays} hari, ${newHours} jam, ${newMinutes} menit, ${newSeconds} detik.
+                            `;
+                        }
+                    }, 1000);
+
                     return; // Tidak tampilkan data jika tanggal belum dibuka
                 }
 
-                const status = row[5]; // Status ada di kolom F
+                const status = row[6]; // Status ada di kolom G
                 const isAccepted = status === 'Diterima';
                 const rowClass = isAccepted ? 'accepted' : 'rejected';
                 const button = isAccepted ? `<button class="btn-print" onclick="generateSuratDiterima({
                     nama: '${row[0]}',
-                    nisn: '${row[1]}',
-                    tanggalLahir: '${row[2]}',
-                    jenisKelamin: '${row[3]}',
-                    namaIbu: '${row[4]}',
+                    asalSekolah: '${row[1]}', // Kolom baru
+                    nisn: '${row[2]}',
+                    tanggalLahir: '${row[3]}',
+                    jenisKelamin: '${row[4]}',
+                    namaIbu: '${row[5]}',
                     nomorUrut: ${index + 1}
                 })"><i class="fas fa-print"></i> Cetak</button>` : '';
 
@@ -281,12 +328,13 @@
                     <tr class="${rowClass}">
                         <td>${index + 1}</td>
                         <td>${row[0]}</td>
-                        <td>${row[1]}</td>
+                        <td>${row[1]}</td> <!-- Kolom baru -->
                         <td>${row[2]}</td>
                         <td>${row[3]}</td>
                         <td>${row[4]}</td>
+                        <td>${row[5]}</td>
                         <td class="status">${status}</td>
-                        <td>${openDate.toLocaleString()}</td>
+                        <td>${formattedDate}</td>
                         <td>${button}</td>
                     </tr>
                 `;
