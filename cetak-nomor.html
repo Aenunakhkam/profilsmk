@@ -23,7 +23,7 @@
     <!-- jsPDF and html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+
     <style>
         :root {
             --primary-color: #1e40af;
@@ -552,7 +552,7 @@
         <div class="print-header">
             <div class="print-header-content">
                 <div class="print-logo">
-                    <img src="image/hasyri.png" alt="Logo" style="height: 120px;">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAgAQKD29B4AAAAAElFTkSuQmCC" alt="Logo" style="height: 80px;">
                 </div>
                 <div>
                     <h1 class="print-title">YAYASAN AMANATUSSOLIKHA</h1>
@@ -744,7 +744,7 @@
                         <td>${cleanData(student.asalSekolah)}</td>
                         <td>${cleanData(student.jurusan)}</td>
                         <td>
-                            <button class="btn-action btn-download" onclick="downloadPDF(${index})" title="Unduh dan Cetak PDF">
+                            <button class="btn-action btn-download" onclick="downloadPDF(${index})" title="Unduh PDF">
                                 <i class="fas fa-download"></i>
                             </button>
                         </td>
@@ -781,6 +781,43 @@
             });
         }
 
+        // Fungsi untuk mem-parsing CSV
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(line => line.trim().length > 0);
+            if (lines.length === 0) return [];
+
+            // Normalisasi header
+            const headers = lines[0].split(',').map(header => header.trim().toLowerCase().replace(/\s/g, '_'));
+            console.log('Parsed CSV headers:', headers); // Debug headers
+            console.log('Raw CSV data:', csv); // Debug raw CSV
+
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(val => val.trim());
+                if (values.length >= headers.length) {
+                    const obj = {};
+                    headers.forEach((header, index) => {
+                        obj[header] = cleanData(values[index]);
+                    });
+
+                    // Map header variations
+                    const normalizedData = {
+                        nama: obj.nama || obj.name || '',
+                        nisn: obj.nisn || '',
+                        tempatLahir: obj.tempat_lahir || obj.place_of_birth || '',
+                        tanggalLahir: obj.tanggal_lahir || obj.date_of_birth || '',
+                        asalSekolah: obj.asal_sekolah || obj.school_origin || '',
+                        jurusan: obj.jurusan || obj.major || '',
+                        timestamp: obj.timestamp || new Date().toISOString()
+                    };
+
+                    result.push(normalizedData);
+                }
+            }
+            console.log('Parsed data:', result); // Debug parsed data
+            return result;
+        }
+
         // Fungsi untuk mengambil data dari CSV
         function fetchCSVData() {
             $('#dataTable').html(`
@@ -804,7 +841,7 @@
                                 icon: 'success',
                                 title: 'Data Berhasil Disinkronisasi',
                                 text: 'Silakan cek secara berkala untuk melihat hasil sinkronisasi.',
-                                timer: 7000,
+                                timer: 3000,
                                 timerProgressBar: true,
                                 showConfirmButton: false
                             });
@@ -813,7 +850,7 @@
                                 icon: 'warning',
                                 title: 'Data Kosong',
                                 text: 'Tidak ada data dari server, menggunakan data dummy.',
-                                timer: 3000,
+                                timer: 2000,
                                 timerProgressBar: true
                             });
                             populateTable(dummyData);
@@ -822,7 +859,7 @@
                         console.error('Error parsing CSV:', error);
                         Swal.fire({
                             icon: 'error',
-                            title: 'Gagal Memuat Data',
+                            title: 'Error',
                             text: 'Terjadi kesalahan saat memproses data. Menggunakan data dummy.',
                             timer: 3000,
                             timerProgressBar: true
@@ -832,9 +869,10 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching CSV:', error);
+                    console.log('Response text:', xhr.responseText); // Debug response
                     Swal.fire({
                         icon: 'error',
-                        title: 'Gagal Memuat Data',
+                        title: 'Error',
                         text: 'Tidak dapat mengakses data dari server. Menggunakan data dummy.',
                         timer: 3000,
                         timerProgressBar: true
@@ -844,34 +882,7 @@
             });
         }
 
-        // Fungsi untuk mem-parsing CSV
-        function parseCSV(csv) {
-            const lines = csv.split('\n').filter(line => line.trim() !== '');
-            const headers = lines[0].split(',').map(header => header.trim().toLowerCase());
-            const result = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(',').map(val => val.trim());
-                if (values.length === headers.length) {
-                    const obj = {};
-                    headers.forEach((header, index) => {
-                        obj[header] = cleanData(values[index]);
-                    });
-                    result.push({
-                        nama: obj.nama || '',
-                        nisn: obj.nisn || '',
-                        tempatLahir: obj['tempat lahir'] || '',
-                        tanggalLahir: obj['tanggal lahir'] || '',
-                        asalSekolah: obj['asal sekolah'] || '',
-                        jurusan: obj.jurusan || '',
-                        timestamp: obj.timestamp || new Date().toISOString()
-                    });
-                }
-            }
-            return result;
-        }
-
-        // Fungsi untuk mengisi formulir cetak (untuk PDF)
+        // Fungsi untuk mengisi formulir cetak untuk PDF
         function fillPrintForm(student, index) {
             const registrationNumber = generateRegistrationNumber(index);
             $('#registrationNumber').text(registrationNumber);
@@ -894,14 +905,14 @@
                 studentDataTable.append(`
                     <tr>
                         <td class="label">${field.label}</td>
-                        <td style="text-align:center;">:</td>
+                        <td style="text-align: center;">:</td>
                         <td>${field.value}</td>
                     </tr>
                 `);
             });
         }
 
-        // Fungsi untuk mengunduh dan mencetak PDF
+        // Fungsi untuk mengunduh PDF
         function downloadPDF(index) {
             const student = studentsData[index];
             fillPrintForm(student, index);
@@ -909,7 +920,7 @@
             Swal.fire({
                 icon: 'info',
                 title: 'Mempersiapkan PDF',
-                text: 'Sedang mempersiapkan dokumen PDF untuk dicetak...',
+                text: 'Sedang mempersiapkan dokumen PDF untuk diunduh...',
                 timer: 1000,
                 timerProgressBar: true,
                 showConfirmButton: false
@@ -920,8 +931,8 @@
                     html2canvas(document.getElementById('printForm'), {
                         scale: 2,
                         useCORS: true,
-                        logging: false,
                         allowTaint: true,
+                        logging: false,
                         letterRendering: true
                     }).then(canvas => {
                         const imgData = canvas.toDataURL('image/png', 1.0);
@@ -936,9 +947,29 @@
                         const pdfHeight = doc.internal.pageSize.getHeight();
                         
                         doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                        doc.autoPrint(); // Trigger print dialog
-                        doc.save(`Bukti_Pendaftaran_${cleanData(student.nama)}.pdf`);
+                        
+                        // Create blob for download
+                        const pdfBlob = doc.output('blob');
+                        const pdfUrl = `Bukti_Pendaftaran_${cleanData(student.nama)}.pdf`;
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(pdfBlob);
+                        link.download = pdfUrl;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(pdfUrl);
+                        
                         $('#printForm').css('display', 'none');
+                        
+                        // Show success notification
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'PDF Berhasil Diunduh',
+                            text: `Bukti pendaftaran untuk ${cleanData(student.nama)} telah diunduh.`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
                     }).catch(error => {
                         Swal.fire({
                             icon: 'error',
