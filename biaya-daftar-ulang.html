@@ -1,1 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Ulang</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF AutoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .table-modern {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border: none;
+            background: white;
+        }
+        
+        .table-modern thead {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+        }
+        
+        .table-modern thead th {
+            border: none;
+            padding: 16px 20px;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .table-modern tbody td {
+            border: none;
+            padding: 14px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        
+        .table-modern tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            transform: translateX(3px);
+            transition: all 0.2s ease;
+        }
+        
+        .table-modern .section-header {
+            background: linear-gradient(135deg, #f1f3f5, #e9ecef);
+            font-weight: 700;
+            font-size: 15px;
+            color: #2c3e50;
+        }
+        
+        .table-modern .section-header td {
+            padding: 12px 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .table-modern .subtotal-row {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .table-modern .total-row {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .table-modern .total-row td {
+            padding: 18px 20px;
+        }
+        
+        .btn-modern {
+            border-radius: 12px;
+            padding: 12px 32px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border: none;
+        }
+        
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .major-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .major-card:hover {
+            transform: translateY(-8px);
+            border-color: #3498db;
+            box-shadow: 0 16px 40px rgba(52, 152, 219, 0.2);
+        }
+        
+        .major-card h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .major-card p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .major-card.tkj:hover {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        }
+        
+        .major-card.akl:hover {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #3498db;
+            display: inline-block;
+        }
+        
+        .currency {
+            color: #27ae60;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-5">
+        <div class="container">
+            <!-- Header -->
+            <div class="text-center mb-5 animate-fade-in">
+                <h1 class="display-4 gradient-text mb-3">
+                    <i class="fas fa-graduation-cap me-3"></i>
+                    DAFTAR ULANG
+                </h1>
+                <p class="lead text-white">Rincian Biaya Pendaftaran Ulang Tahun Ajaran 2024/2025</p>
+            </div>
 
+            <!-- Jurusan Selection -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="major-card tkj" onclick="showMajor('tkj')">
+                        <h4><i class="fas fa-laptop-code me-2"></i>Teknik Komputer dan Jaringan</h4>
+                        <p class="mb-0">Klik untuk melihat rincian biaya</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="major-card akl" onclick="showMajor('akl')">
+                        <h4><i class="fas fa-calculator me-2"></i>Akuntansi dan Keuangan Lembaga</h4>
+                        <p class="mb-0">Klik untuk melihat rincian biaya</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tables Container -->
+            <div id="tablesContainer" class="glass-card p-4 animate-fade-in" style="display: none;">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 id="majorTitle" class="gradient-text mb-0"></h3>
+                            <button class="btn btn-success btn-modern" onclick="downloadPDF()">
+                                <i class="fas fa-download me-2"></i>Unduh PDF
+                            </button>
+                        </div>
+
+                        <!-- Combined Table -->
+                        <div class="table-responsive">
+                            <table class="table table-modern">
+                                <thead>
+                                    <tr>
+                                        <th width="8%">No</th>
+                                        <th width="67%">Rincian</th>
+                                        <th width="25%">Nominal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rincian A Header -->
+                                    <tr class="section-header">
+                                        <td colspan="3"><i class="fas fa-book me-2"></i>Rincian A - Biaya Pendidikan</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Iuran Dana Pendidikan (IDP) Bulan Juli</td>
+                                        <td class="currency">Rp 90.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Pengenalan Lingkungan Sekolah (PLS)</td>
+                                        <td class="currency">Rp 100.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Perkemahan Penerimaan Tamu Ambalan (PPTA)</td>
+                                        <td class="currency">Rp 250.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Ekstrakurikuler</td>
+                                        <td class="currency">Rp 100.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>OSIS (1 Tahun)</td>
+                                        <td class="currency">Rp 125.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>Kartu Pelajar</td>
+                                        <td class="currency">Rp 35.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>7</td>
+                                        <td>Sampul Rapor</td>
+                                        <td class="currency">Rp 60.000</td>
+                                    </tr>
+                                    <tr class="subtotal-row">
+                                        <td></td>
+                                        <td>Subtotal Rincian A</td>
+                                        <td class="currency">Rp 760.000</td>
+                                    </tr>
+                                    <!-- Rincian B Header -->
+                                    <tr class="section-header">
+                                        <td colspan="3"><i class="fas fa-tshirt me-2"></i>Rincian B - Seragam</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Praktik Atasan</td>
+                                        <td class="currency">Rp 125.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Olahraga</td>
+                                        <td class="currency">Rp 150.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Topi, Dasi, dan Ikat Pinggang</td>
+                                        <td class="currency">Rp 85.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Atribut</td>
+                                        <td class="currency">Rp 80.000</td>
+                                    </tr>
+                                    <tr class="subtotal-row">
+                                        <td></td>
+                                        <td>Subtotal Rincian B</td>
+                                        <td class="currency">Rp 440.000</td>
+                                    </tr>
+                                    <!-- Total Row -->
+                                    <tr class="total-row">
+                                        <td></td>
+                                        <td><i class="fas fa-calculator me-2"></i>TOTAL KESELURUHAN</td>
+                                        <td>Rp 1.200.000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="text-center text-muted mt-3"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-5">
+                <p class="text-white">
+                    <i class="fas fa-school me-2"></i>
+                    SMK Hasyim Asyari Bojong - Tahun Ajaran 2025/2026
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Data untuk setiap jurusan
+        const majors = {
+            tkj: "Teknik Komputer dan Jaringan",
+            akl: "Akuntansi dan Keuangan Lembaga"
+        };
+
+        function showMajor(majorCode) {
+            const container = document.getElementById('tablesContainer');
+            const title = document.getElementById('majorTitle');
+            
+            title.textContent = majors[majorCode];
+            container.style.display = 'block';
+            
+            // Smooth scroll to tables
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Add animation
+            container.classList.remove('animate-fade-in');
+            setTimeout(() => {
+                container.classList.add('animate-fade-in');
+            }, 10);
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('DAFTAR ULANG', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            const majorTitle = document.getElementById('majorTitle').textContent;
+            doc.text(majorTitle, 105, 30, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text('Rincian Biaya Pendaftaran Ulang Tahun Ajaran 2025/2026', 105, 40, { align: 'center' });
+            
+            let yPosition = 60;
+            
+            // Combined Table
+            const tableData = [
+                ['No', 'Rincian', 'Nominal'],
+                ['', 'Rincian A - Biaya Pendidikan', ''],
+                ['1', 'Iuran Dana Pendidikan (IDP) Bulan Juli', 'Rp 90.000'],
+                ['2', 'Pengenalan Lingkungan Sekolah (PLS)', 'Rp 100.000'],
+                ['3', 'Perkemahan Penerimaan Tamu Ambalan (PPTA)', 'Rp 250.000'],
+                ['4', 'Ekstrakurikuler', 'Rp 100.000'],
+                ['5', 'OSIS (1 Tahun)', 'Rp 125.000'],
+                ['6', 'Kartu Pelajar', 'Rp 35.000'],
+                ['7', 'Sampul Rapor', 'Rp 60.000'],
+                ['', 'Subtotal Rincian A', 'Rp 760.000'],
+                ['', 'Rincian B - Seragam', ''],
+                ['1', 'Praktik Atasan', 'Rp 125.000'],
+                ['2', 'Olahraga', 'Rp 150.000'],
+                ['3', 'Topi, Dasi, dan Ikat Pinggang', 'Rp 85.000'],
+                ['4', 'Atribut', 'Rp 80.000'],
+                ['', 'Subtotal Rincian B', 'Rp 440.000'],
+                ['', 'TOTAL KESELURUHAN', 'Rp 1.200.000']
+            ];
+            
+            doc.autoTable({
+                head: [tableData[0]],
+                body: tableData.slice(1),
+                startY: yPosition,
+                theme: 'grid',
+                headStyles: { fillColor: [102, 126, 234], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 10, cellPadding: 4 },
+                columnStyles: {
+                    0: { cellWidth: 20 },
+                    1: { cellWidth: 110 },
+                    2: { cellWidth: 50, halign: 'right' }
+                },
+                didParseCell: (data) => {
+                    if (data.row.index === 1 || data.row.index === 10) {
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.fillColor = [241, 243, 245];
+                        data.cell.styles.textColor = [44, 62, 80];
+                    } else if (data.row.index === 16) {
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.fillColor = [44, 62, 80];
+                        data.cell.styles.textColor = [255, 255, 255];
+                    } else if (data.row.index === 9 || data.row.index === 15) {
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.fillColor = [233, 236, 239];
+                        data.cell.styles.textColor = [44, 62, 80];
+                    }
+                },
+                margin: { left: 20, right: 20 }
+            });
+            
+            // Footer
+            yPosition = doc.lastAutoTable.finalY + 20;
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('', 105, yPosition, { align: 'center' });
+            doc.text('SMK Hasyim Asyari Bojong - Tahun Ajaran 2025/2026', 105, yPosition + 10, { align: 'center' });
+            
+            // Save PDF
+            const fileName = `Daftar_Ulang_${majorTitle.replace(/\s+/g, '_')}.pdf`;
+            doc.save(fileName);
+        }
+
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.table tbody tr:not(.section-header, .total-row)');
+            rows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
